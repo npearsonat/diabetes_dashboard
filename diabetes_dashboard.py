@@ -539,7 +539,7 @@ fig_rate = px.bar(
 
 # Distribution by Education
 distribution = filtered_df['Education'].value_counts().sort_index()
-distribution = distribution.reset_index().rename(columns={'index': 'Education', 'Education': 'Count'})
+distribution = distribution.reset_index().rename(columns={'index': 'Education', 0: 'Count'})
 
 fig_dist = px.bar(
     distribution,
