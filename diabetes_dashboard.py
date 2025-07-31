@@ -24,28 +24,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-st.markdown(
-    [data-testid="stSidebar"] .stSlider > div > input[type="range"]::-webkit-slider-thumb {
-    background-color: #08306b !important;
-    border: none !important;
-}
-[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-webkit-slider-runnable-track {
-    background: linear-gradient(to right, #6baed6, #2171b5) !important;
-    height: 8px !important;
-    border-radius: 4px !important;
-}
-[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-moz-range-thumb {
-    background-color: #08306b !important;
-    border: none !important;
-}
-[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-moz-range-track {
-    background: linear-gradient(to right, #6baed6, #2171b5) !important;
-    height: 8px !important;
-    border-radius: 4px !important;
-}
-
-)
-
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
     page_title='Diabetes Health Indicators Dashboard',
