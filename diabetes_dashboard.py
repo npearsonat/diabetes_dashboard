@@ -466,7 +466,7 @@ binary_columns = [
     'HvyAlcoholConsump', 'AnyHealthcare', 'NoDocbcCost', 'DiffWalk'
 ]
 
-# Prepare data: calculate diabetes rate per trait value (0 or 1)
+# Prepare data: calculate diabetes rate per trait value
 heatmap_data = []
 for col in binary_columns:
     for value in [0, 1]:
@@ -493,11 +493,11 @@ fig_heatmap = px.imshow(
     height=500
 )
 
-# Replace x-axis ticks: 0 -> 'Negative', 1 -> 'Positive'
+# Replace x-axis ticks: 0 -> 'Does Not Have', 1 -> 'Has'
 fig_heatmap.update_xaxes(
     tickmode='array',
     tickvals=[0, 1],
-    ticktext=['Negative', 'Positive']
+    ticktext=['Does Not Have', 'Has']
 )
 
 st.plotly_chart(fig_heatmap, use_container_width=True)
