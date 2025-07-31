@@ -24,6 +24,37 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+st.markdown(
+    """
+    <style>
+    /* Existing body background pattern here ... */
+
+    /* Sidebar slider customization */
+    [data-testid="stSidebar"] input[type="range"]::-webkit-slider-thumb {
+        background-color: #08306b !important;  /* Dark blue thumb */
+        border: none !important;
+    }
+    [data-testid="stSidebar"] input[type="range"]::-webkit-slider-runnable-track {
+        background: linear-gradient(to right, #6baed6, #2171b5) !important;  /* Blue track */
+        height: 8px !important;
+        border-radius: 4px !important;
+    }
+
+    /* Firefox */
+    [data-testid="stSidebar"] input[type="range"]::-moz-range-thumb {
+        background-color: #08306b !important;
+        border: none !important;
+    }
+    [data-testid="stSidebar"] input[type="range"]::-moz-range-track {
+        background: linear-gradient(to right, #6baed6, #2171b5) !important;
+        height: 8px !important;
+        border-radius: 4px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
     page_title='Diabetes Health Indicators Dashboard',
@@ -168,7 +199,7 @@ col_title, col_stats = st.columns([3, 1])
 with col_title:
     st.markdown(
         """
-        <h1 style="color: #08306b;">CDC Diabetes Health Indicators Dashboard</h1>
+        <h1 style='color: darkblue; text-decoration: underline;'>CDC Diabetes Health Indicators Dashboard</h1>
         <p>
         <strong>Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey</strong><br>
         <em>Interactive dashboard analyzing health behaviors, chronic conditions, and demographics</em><br>
