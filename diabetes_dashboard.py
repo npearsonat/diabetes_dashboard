@@ -521,7 +521,7 @@ st.divider()
 
 # Section 5 Education and Income
 st.header("Diabetes Prevalence by Education and Income Level")
-st.markdown("*Diabetes rate across different education and income levels.*")
+st.markdown("*Diabetes rate across different education and income levels. Sorted from low to high*")
 
 col1, col2 = st.columns(2)
 
