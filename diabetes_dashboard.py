@@ -14,8 +14,8 @@ st.markdown(
     <style>
     .stApp {
         background-color: white;
-        background-image: radial-gradient(rgba(173, 216, 230, 0.2) 10%, transparent 11%),
-                          radial-gradient(rgba(173, 216, 230, 0.2) 10%, transparent 11%);
+        background-image: radial-gradient(rgba(173, 216, 230, 0.2) 20%, transparent 11%),
+                          radial-gradient(rgba(173, 216, 230, 0.2) 20%, transparent 11%);
         background-size: 80px 80px;
         background-position: 0 0, 40px 40px;
     }
