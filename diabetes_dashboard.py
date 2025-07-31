@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
@@ -94,9 +96,56 @@ def preprocess_data(df):
     
     return processed_df
 
+@st.cache_data
+def train_random_forest(df):
+    """Train Random Forest model to get feature importance for diabetes prediction."""
+    # Select features for the model
+    feature_cols = ['HighBP', 'HighChol', 'BMI', 'Smoker', 'Stroke', 'HeartDiseaseorAttack', 
+                    'PhysActivity', 'Fruits', 'Veggies', 'GenHlth', 'MentHlth', 'PhysHlth', 
+                    'DiffWalk', 'Sex', 'Age', 'Education', 'Income']
+    
+    X = df[feature_cols]
+    y = df['Diabetes_binary']
+    
+    # Train Random Forest
+    rf = RandomForestClassifier(n_estimators=100, random_state=42)
+    rf.fit(X, y)
+    
+    # Get feature importance
+    importance_df = pd.DataFrame({
+        'Feature': feature_cols,
+        'Importance': rf.feature_importances_
+    }).sort_values('Importance', ascending=True)
+    
+    # Create readable feature names
+    feature_names = {
+        'HighBP': 'High Blood Pressure',
+        'HighChol': 'High Cholesterol',
+        'BMI': 'Body Mass Index',
+        'Smoker': 'Smoking History',
+        'Stroke': 'Stroke History',
+        'HeartDiseaseorAttack': 'Heart Disease',
+        'PhysActivity': 'Physical Activity',
+        'Fruits': 'Fruit Consumption',
+        'Veggies': 'Vegetable Consumption',
+        'GenHlth': 'General Health',
+        'MentHlth': 'Mental Health Days',
+        'PhysHlth': 'Physical Health Days',
+        'DiffWalk': 'Difficulty Walking',
+        'Sex': 'Sex',
+        'Age': 'Age',
+        'Education': 'Education Level',
+        'Income': 'Income Level'
+    }
+    
+    importance_df['Feature_Name'] = importance_df['Feature'].map(feature_names)
+    
+    return importance_df
+
 # Load and preprocess data
 df = load_diabetes_data()
 processed_df = preprocess_data(df)
+feature_importance = train_random_forest(df)
 
 # -----------------------------------------------------------------------------
 # Dashboard Header
@@ -182,14 +231,11 @@ st.sidebar.metric("Filtered Responses", len(filtered_df))
 # -----------------------------------------------------------------------------
 # Main Dashboard Content
 
-# Row 1: Demographics Analysis
-st.markdown("""
-<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
+# Section 1: Demographics Analysis
+st.header("📊 Demographics & Diabetes Prevalence")
+st.markdown("*Explore how diabetes rates vary across different demographic groups including age and sex distributions.*")
 
-st.header("Demographics & Diabetes Prevalence")
-
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
     # Age distribution by diabetes status
@@ -201,9 +247,10 @@ with col1:
         color='DiabetesStatus',
         title='Diabetes Prevalence by Age Group',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+        height=350
     )
-    fig_age.update_layout(height=400, xaxis_tickangle=45)
+    fig_age.update_layout(xaxis_tickangle=45)
     st.plotly_chart(fig_age, use_container_width=True)
 
 with col2:
@@ -220,27 +267,14 @@ with col2:
         color='DiabetesStatus',
         title='Diabetes Prevalence by Sex',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        text='Percentage'
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+        text='Percentage',
+        height=350
     )
     fig_sex.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_sex.update_layout(height=400)
     st.plotly_chart(fig_sex, use_container_width=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
-
-# Row 2: Risk Factors Analysis
-st.markdown("""
-<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
-
-st.header("Major Risk Factors")
-
-col1, col2 = st.columns(2)
-
-with col1:
+with col3:
     # BMI distribution by diabetes status with proper ordering
     bmi_order = ['Underweight', 'Normal', 'Overweight', 'Obese']
     bmi_diabetes = filtered_df.groupby(['BMI_Category', 'DiabetesStatus']).size().reset_index(name='Count')
@@ -257,13 +291,37 @@ with col1:
         color='DiabetesStatus',
         title='BMI Categories and Diabetes Status',
         labels={'count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'BMI_Category': bmi_order},
-        text='Percentage'
+        text='Percentage',
+        height=350
     )
     fig_bmi.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_bmi.update_layout(height=400)
     st.plotly_chart(fig_bmi, use_container_width=True)
+
+st.divider()
+
+# Section 2: Risk Factors and ML Insights
+st.header("🤖 Machine Learning Insights & Risk Factors")
+st.markdown("*Random Forest model analysis showing the most important features for predicting diabetes, alongside key risk factor comparisons.*")
+
+col1, col2, col3 = st.columns([1, 1, 1])
+
+with col1:
+    # Random Forest Feature Importance
+    fig_importance = px.bar(
+        feature_importance,
+        x='Importance',
+        y='Feature_Name',
+        orientation='h',
+        title='ML Feature Importance for Diabetes Prediction',
+        labels={'Importance': 'Feature Importance', 'Feature_Name': 'Health Indicators'},
+        color='Importance',
+        color_continuous_scale='Blues',
+        height=350
+    )
+    fig_importance.update_layout(yaxis={'categoryorder': 'total ascending'})
+    st.plotly_chart(fig_importance, use_container_width=True)
 
 with col2:
     # High BP and High Cholesterol
@@ -282,25 +340,48 @@ with col2:
         color='DiabetesStatus',
         title=f'{selected_risk.replace("_Label", "")} and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        text='Percentage'
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+        text='Percentage',
+        height=350
     )
     fig_risk.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_risk.update_layout(height=400)
     st.plotly_chart(fig_risk, use_container_width=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
+with col3:
+    # Risk score calculation and distribution
+    def calculate_risk_score(row):
+        score = 0
+        if row['HighBP'] == 1: score += 2
+        if row['HighChol'] == 1: score += 2
+        if row['BMI'] > 30: score += 3
+        elif row['BMI'] > 25: score += 1
+        if row['Smoker'] == 1: score += 1
+        if row['HeartDiseaseorAttack'] == 1: score += 2
+        if row['PhysActivity'] == 0: score += 1
+        if row['GenHlth'] > 3: score += 1
+        if row['Age'] > 9: score += 1  # Age > 60
+        return score
+    
+    filtered_df['RiskScore'] = filtered_df.apply(calculate_risk_score, axis=1)
+    risk_counts = filtered_df['RiskScore'].value_counts().sort_index()
+    
+    fig_risk_score = px.bar(
+        x=risk_counts.index,
+        y=risk_counts.values,
+        title='Distribution of Diabetes Risk Scores',
+        labels={'x': 'Risk Score (0-12)', 'y': 'Number of Respondents'},
+        color_discrete_sequence=['#1f77b4'],
+        height=350
+    )
+    st.plotly_chart(fig_risk_score, use_container_width=True)
 
 st.divider()
 
-# Row 3: Health Behaviors
-st.markdown("""
-<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
+# Section 3: Health Behaviors & Healthcare Access
+st.header("💪 Health Behaviors & Healthcare Access")
+st.markdown("*Analysis of lifestyle factors including physical activity, self-reported health status, and healthcare accessibility patterns.*")
 
-st.header("Health Behaviors & Lifestyle")
-
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
     # Physical activity and diabetes
@@ -316,11 +397,11 @@ with col1:
         color='DiabetesStatus',
         title='Physical Activity and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        text='Percentage'
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+        text='Percentage',
+        height=350
     )
     fig_activity.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_activity.update_layout(height=400)
     st.plotly_chart(fig_activity, use_container_width=True)
 
 with col2:
@@ -340,94 +421,15 @@ with col2:
         color='DiabetesStatus',
         title='Self-Reported General Health and Diabetes',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'GenHlth_Label': health_order},
-        text='Percentage'
+        text='Percentage',
+        height=350
     )
     fig_health.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_health.update_layout(height=400)
     st.plotly_chart(fig_health, use_container_width=True)
 
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
-
-# Row 4: Advanced Analytics
-st.markdown("""
-<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
-
-st.header("Risk Factor Correlation Analysis")
-
-col1, col2 = st.columns(2)
-
-with col1:
-    # Correlation heatmap
-    st.subheader("Health Indicators Correlation Matrix")
-    
-    # Select key numeric/binary columns for correlation
-    corr_cols = ['Diabetes_binary', 'HighBP', 'HighChol', 'BMI', 'Smoker', 
-                'HeartDiseaseorAttack', 'PhysActivity', 'Fruits', 'Veggies', 
-                'GenHlth', 'MentHlth', 'PhysHlth', 'Age']
-    
-    corr_matrix = filtered_df[corr_cols].corr()
-    
-    fig_heatmap = px.imshow(
-        corr_matrix,
-        title="Correlation Matrix of Health Indicators",
-        color_continuous_scale='RdBu',
-        aspect='auto'
-    )
-    fig_heatmap.update_layout(height=400)
-    st.plotly_chart(fig_heatmap, use_container_width=True)
-
-with col2:
-    # Risk score calculation
-    st.subheader("Diabetes Risk Assessment")
-    
-    # Calculate comprehensive risk score
-    def calculate_risk_score(row):
-        score = 0
-        if row['HighBP'] == 1: score += 2
-        if row['HighChol'] == 1: score += 2
-        if row['BMI'] > 30: score += 3
-        elif row['BMI'] > 25: score += 1
-        if row['Smoker'] == 1: score += 1
-        if row['HeartDiseaseorAttack'] == 1: score += 2
-        if row['PhysActivity'] == 0: score += 1
-        if row['GenHlth'] > 3: score += 1
-        if row['Age'] > 9: score += 1  # Age > 60
-        return score
-    
-    filtered_df['RiskScore'] = filtered_df.apply(calculate_risk_score, axis=1)
-    
-    # Risk score distribution
-    risk_counts = filtered_df['RiskScore'].value_counts().sort_index()
-    
-    fig_risk_score = px.bar(
-        x=risk_counts.index,
-        y=risk_counts.values,
-        title='Distribution of Diabetes Risk Scores',
-        labels={'x': 'Risk Score (0-12)', 'y': 'Number of Respondents'},
-        color_discrete_sequence=['#1f77b4']  # Blue color
-    )
-    fig_risk_score.update_layout(height=400)
-    st.plotly_chart(fig_risk_score, use_container_width=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.divider()
-
-# Row 5: Healthcare Access
-st.markdown("""
-<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
-
-st.header("Healthcare Access & Outcomes")
-
-col1, col2 = st.columns(2)
-
-with col1:
+with col3:
     # Healthcare access by diabetes status
     healthcare_df = filtered_df.groupby(['AnyHealthcare', 'DiabetesStatus']).size().reset_index(name='Count')
     healthcare_df['AnyHealthcare'] = healthcare_df['AnyHealthcare'].map({0: 'No Healthcare', 1: 'Has Healthcare'})
@@ -442,37 +444,37 @@ with col1:
         color='DiabetesStatus',
         title='Healthcare Access and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        text='Percentage'
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+        text='Percentage',
+        height=350
     )
     fig_healthcare.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
-    fig_healthcare.update_layout(height=400)
     st.plotly_chart(fig_healthcare, use_container_width=True)
-
-with col2:
-    # Mental vs Physical health days
-    fig_scatter = px.scatter(
-        filtered_df.sample(min(5000, len(filtered_df))),  # Sample for performance
-        x='PhysHlth',
-        y='MentHlth',
-        color='DiabetesStatus',
-        title='Physical vs Mental Health Days (Poor Health)',
-        labels={'PhysHlth': 'Physical Health Days', 'MentHlth': 'Mental Health Days'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
-    )
-    fig_scatter.update_layout(height=400)
-    st.plotly_chart(fig_scatter, use_container_width=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# Row 6: Data Explorer
-st.markdown("""
-<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
-""", unsafe_allow_html=True)
+# Section 4: Mental vs Physical Health Correlation
+st.header("🧠 Mental & Physical Health Relationship")
+st.markdown("*Scatter plot analysis examining the relationship between physical and mental health days, providing insights into overall wellbeing patterns among diabetic and non-diabetic individuals.*")
 
-st.header("Survey Data Explorer")
+# Mental vs Physical health days
+fig_scatter = px.scatter(
+    filtered_df.sample(min(5000, len(filtered_df))),  # Sample for performance
+    x='PhysHlth',
+    y='MentHlth',
+    color='DiabetesStatus',
+    title='Physical vs Mental Health Days (Poor Health)',
+    labels={'PhysHlth': 'Physical Health Days', 'MentHlth': 'Mental Health Days'},
+    color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
+    height=400
+)
+st.plotly_chart(fig_scatter, use_container_width=True)
+
+st.divider()
+
+# Section 5: Data Explorer
+st.header("📋 Survey Data Explorer")
+st.markdown("*Browse and download the filtered survey data. Use the sidebar filters to customize the dataset according to your analysis needs.*")
 
 # Display key columns
 display_columns = ['AgeGroup', 'Sex_Label', 'BMI', 'BMI_Category', 'GenHlth_Label', 
@@ -493,14 +495,12 @@ st.download_button(
     mime='text/csv'
 )
 
-st.markdown("</div>", unsafe_allow_html=True)
-
 # -----------------------------------------------------------------------------
 # Footer
 st.divider()
 st.markdown("""
 **Data Source:** [CDC Diabetes Health Indicators Dataset - Kaggle](https://www.kaggle.com/datasets/alexteboul/diabetes-health-indicators-dataset)  
 **Original Source:** CDC Behavioral Risk Factor Surveillance System (BRFSS) 2015  
-**Dashboard created with:** Streamlit, Plotly, Pandas  
-*This dashboard demonstrates public health data analysis capabilities for portfolio purposes.*
+**Dashboard created with:** Streamlit, Plotly, Pandas, Scikit-learn  
+*This dashboard demonstrates public health data analysis and machine learning capabilities for portfolio purposes.*
 """)
