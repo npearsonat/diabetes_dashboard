@@ -9,18 +9,15 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
-# Background pattern
 st.markdown(
     """
     <style>
     .stApp {
-        background: repeating-linear-gradient(
-            45deg,
-            #f9f9f9,
-            #f9f9f9 10px,
-            #f0f0f0 10px,
-            #f0f0f0 20px
-        );
+        background-color: white;
+        background-image: radial-gradient(rgba(173, 216, 230, 0.2) 10%, transparent 11%),
+                          radial-gradient(rgba(173, 216, 230, 0.2) 10%, transparent 11%);
+        background-size: 80px 80px;
+        background-position: 0 0, 40px 40px;
     }
     </style>
     """,
