@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -511,6 +511,10 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 st.divider()
 
 # Section 5 Education and Income
+import numpy as np
+import plotly.graph_objects as go
+
+# Section 5 Education and Income
 st.header("Diabetes Prevalence by Education and Income Level")
 st.markdown("*Diabetes rate across different education and income levels. Sorted from low to high*")
 
@@ -519,6 +523,9 @@ col1, col2 = st.columns(2)
 with col1:
     edu_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean().reset_index()
     edu_rate['Diabetes Rate (%)'] = edu_rate['Diabetes_binary'] * 100
+    
+    # Sort by Education to ensure trendline order
+    edu_rate = edu_rate.sort_values('Education')
 
     fig_edu_rate = px.bar(
         edu_rate,
@@ -533,11 +540,31 @@ with col1:
         height=400
     )
     fig_edu_rate.update_layout(coloraxis_showscale=False)
+
+    # Calculate trendline
+    x_vals = edu_rate['Education']
+    y_vals = edu_rate['Diabetes Rate (%)']
+    coeffs = np.polyfit(x_vals, y_vals, 1)  # Linear fit
+    trendline = coeffs[0] * x_vals + coeffs[1]
+
+    fig_edu_rate.add_trace(
+        go.Scatter(
+            x=x_vals,
+            y=trendline,
+            mode='lines',
+            line=dict(color='darkblue', dash='dash'),
+            name='Trendline'
+        )
+    )
+
     st.plotly_chart(fig_edu_rate, use_container_width=True)
 
 with col2:
     income_rate = filtered_df.groupby('Income')['Diabetes_binary'].mean().reset_index()
     income_rate['Diabetes Rate (%)'] = income_rate['Diabetes_binary'] * 100
+    
+    # Sort by Income for trendline
+    income_rate = income_rate.sort_values('Income')
 
     fig_income_rate = px.bar(
         income_rate,
@@ -552,6 +579,23 @@ with col2:
         height=400
     )
     fig_income_rate.update_layout(coloraxis_showscale=False)
+
+    # Calculate trendline
+    x_vals = income_rate['Income']
+    y_vals = income_rate['Diabetes Rate (%)']
+    coeffs = np.polyfit(x_vals, y_vals, 1)
+    trendline = coeffs[0] * x_vals + coeffs[1]
+
+    fig_income_rate.add_trace(
+        go.Scatter(
+            x=x_vals,
+            y=trendline,
+            mode='lines',
+            line=dict(color='darkblue', dash='dash'),
+            name='Trendline'
+        )
+    )
+
     st.plotly_chart(fig_income_rate, use_container_width=True)
 
 st.divider()
