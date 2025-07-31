@@ -304,7 +304,6 @@ with col3:
         y='Count',
         color='DiabetesStatus',
         title='BMI Categories and Diabetes Status',
-        labels={'count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'BMI_Category': bmi_order},
         height=350
