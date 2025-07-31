@@ -178,6 +178,8 @@ with col_title:
         unsafe_allow_html=True
     )
 
+st.image("images/diabetes_image.jpg", use_column_width=True)
+
 with col_stats:
     total_patients = len(processed_df)
     diabetes_rate = (processed_df['Diabetes_binary'].sum() / len(processed_df)) * 100
