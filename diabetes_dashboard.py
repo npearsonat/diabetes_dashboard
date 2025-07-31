@@ -27,30 +27,38 @@ def load_diabetes_data():
     np.random.seed(42)  # For reproducible results
     n_patients = 768
     
-    # Create realistic data based on medical literature
+    # Generate outcome first (35% diabetic, 65% non-diabetic)
+    outcome = np.concatenate([
+        np.zeros(int(n_patients * 0.65)),  # Non-diabetic
+        np.ones(int(n_patients * 0.35))    # Diabetic
+    ])
+    np.random.shuffle(outcome)  # Shuffle the outcomes
+    
+    # Create realistic data based on outcome
+    glucose = []
+    for i in range(n_patients):
+        if outcome[i] == 1:  # Diabetic
+            glucose.append(max(0, np.random.normal(141, 31)))
+        else:  # Non-diabetic
+            glucose.append(max(0, np.random.normal(109, 26)))
+    
+    # Create the dataset
     diabetes_data = {
         'Pregnancies': np.random.poisson(3.8, n_patients),
-        'Glucose': np.concatenate([
-            np.random.normal(109, 26, int(n_patients * 0.65)),  # Non-diabetic
-            np.random.normal(141, 31, int(n_patients * 0.35))   # Diabetic
-        ]),
-        'BloodPressure': np.random.normal(69, 19, n_patients),
-        'SkinThickness': np.random.exponential(16, n_patients),
-        'Insulin': np.random.exponential(100, n_patients),
-        'BMI': np.random.normal(32, 8, n_patients),
-        'DiabetesPedigreeFunction': np.random.gamma(2, 0.25, n_patients),
-        'Age': np.random.gamma(2, 15, n_patients).astype(int) + 21,
-        'Outcome': np.concatenate([
-            np.zeros(int(n_patients * 0.65)),  # Non-diabetic
-            np.ones(int(n_patients * 0.35))    # Diabetic
-        ])
+        'Glucose': glucose,
+        'BloodPressure': np.maximum(0, np.random.normal(69, 19, n_patients)),
+        'SkinThickness': np.maximum(0, np.random.exponential(16, n_patients)),
+        'Insulin': np.maximum(0, np.random.exponential(100, n_patients)),
+        'BMI': np.maximum(15, np.random.normal(32, 8, n_patients)),
+        'DiabetesPedigreeFunction': np.maximum(0, np.random.gamma(2, 0.25, n_patients)),
+        'Age': np.maximum(21, np.random.gamma(2, 15, n_patients).astype(int)),
+        'Outcome': outcome.astype(int)
     }
     
-    # Create DataFrame and shuffle
+    # Create DataFrame
     df = pd.DataFrame(diabetes_data)
-    df = df.sample(frac=1, random_state=42).reset_index(drop=True)
     
-    # Clean up data to realistic ranges
+    # Clean up data to realistic medical ranges
     df['BloodPressure'] = np.clip(df['BloodPressure'], 0, 200)
     df['SkinThickness'] = np.clip(df['SkinThickness'], 0, 100)
     df['Insulin'] = np.clip(df['Insulin'], 0, 900)
