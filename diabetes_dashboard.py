@@ -90,7 +90,7 @@ processed_df = preprocess_data(df)
 
 # -----------------------------------------------------------------------------
 # Dashboard Header
-st.title('🩺 Diabetes Analytics Dashboard')
+st.title('🩺 Diabetes Analytics Dashboard (Test)')
 st.markdown(f"""
 **Comprehensive analysis of diabetes risk factors and patient outcomes**  
 *Interactive dashboard built with Streamlit for healthcare data analysis*  
