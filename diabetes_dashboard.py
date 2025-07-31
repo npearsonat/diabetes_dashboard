@@ -483,14 +483,21 @@ heatmap_df = pd.DataFrame(heatmap_data)
 # Pivot to make heatmap-friendly format
 heatmap_pivot = heatmap_df.pivot(index='Trait', columns='Value', values='DiabetesRate')
 
-# Plot heatmap
+# Plot heatmap with relabeled x-axis
 fig_heatmap = px.imshow(
     heatmap_pivot,
     color_continuous_scale='Reds',
     labels={'color': 'Diabetes Rate'},
-    title='Diabetes Rate by Binary Trait (0 vs 1)',
+    title='Diabetes Rate by Binary Trait (Negative vs Positive)',
     aspect='auto',
     height=500
+)
+
+# Replace x-axis ticks: 0 -> 'Negative', 1 -> 'Positive'
+fig_heatmap.update_xaxes(
+    tickmode='array',
+    tickvals=[0, 1],
+    ticktext=['Negative', 'Positive']
 )
 
 st.plotly_chart(fig_heatmap, use_container_width=True)
