@@ -132,13 +132,28 @@ st.divider()
 # Sidebar Filters
 st.sidebar.header("Filter Survey Data")
 
-# Age range filter (convert from age categories to actual years)
-age_range = st.sidebar.slider(
-    "Age Range", 
-    18, 
-    80, 
-    (18, 80)
+# Age range filter with discrete age categories
+age_categories = [
+    "18-24", "25-29", "30-34", "35-39", "40-44", 
+    "45-49", "50-54", "55-59", "60-64", "65-69", 
+    "70-74", "75-79", "80+"
+]
+
+selected_age_range = st.sidebar.select_slider(
+    "Age Range",
+    options=age_categories,
+    value=("18-24", "80+")
 )
+
+# Convert selected age ranges to category numbers
+age_cat_mapping = {
+    "18-24": 1, "25-29": 2, "30-34": 3, "35-39": 4, "40-44": 5,
+    "45-49": 6, "50-54": 7, "55-59": 8, "60-64": 9, "65-69": 10,
+    "70-74": 11, "75-79": 12, "80+": 13
+}
+
+min_age_cat = age_cat_mapping[selected_age_range[0]]
+max_age_cat = age_cat_mapping[selected_age_range[1]]
 
 # BMI range filter
 bmi_range = st.sidebar.slider(
@@ -154,25 +169,6 @@ health_status = st.sidebar.multiselect(
     ['Excellent', 'Very Good', 'Good', 'Fair', 'Poor'],
     default=['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
 )
-
-# Convert age range to age categories for filtering
-def age_to_category(age):
-    if age <= 24: return 1
-    elif age <= 29: return 2
-    elif age <= 34: return 3
-    elif age <= 39: return 4
-    elif age <= 44: return 5
-    elif age <= 49: return 6
-    elif age <= 54: return 7
-    elif age <= 59: return 8
-    elif age <= 64: return 9
-    elif age <= 69: return 10
-    elif age <= 74: return 11
-    elif age <= 79: return 12
-    else: return 13
-
-min_age_cat = age_to_category(age_range[0])
-max_age_cat = age_to_category(age_range[1])
 
 # Apply filters
 filtered_df = processed_df[
