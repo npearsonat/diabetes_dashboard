@@ -166,12 +166,17 @@ feature_importance = train_random_forest(df)
 col_title, col_stats = st.columns([3, 1])
 
 with col_title:
-    st.title('CDC Diabetes Health Indicators Dashboard')
-    st.markdown("""
-    **Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey**  
-    *Interactive dashboard analyzing health behaviors, chronic conditions, and demographics*  
-    **Dataset:** CDC Behavioral Risk Factor Surveillance System (35,000 survey responses)
-    """)
+    st.markdown(
+        """
+        <h1 style="color: #08306b;">CDC Diabetes Health Indicators Dashboard</h1>
+        <p>
+        <strong>Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey</strong><br>
+        <em>Interactive dashboard analyzing health behaviors, chronic conditions, and demographics</em><br>
+        <strong>Dataset:</strong> CDC Behavioral Risk Factor Surveillance System (35,000 survey responses)
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
 
 with col_stats:
     total_patients = len(processed_df)
