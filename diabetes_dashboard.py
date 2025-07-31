@@ -520,27 +520,48 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 st.divider()
 
 # Section 5 Education and Income
-st.header("Diabetes Prevalence by Education Level")
-st.markdown("*Diabetes rate across different education levels.*")
+st.header("Diabetes Prevalence by Education and Income Level")
+st.markdown("*Diabetes rate across different education and income levels.*")
 
-edu_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean().reset_index()
-edu_rate['Diabetes Rate (%)'] = edu_rate['Diabetes_binary'] * 100
+col1, col2 = st.columns(2)
 
-fig_edu_rate = px.bar(
-    edu_rate,
-    x='Education',
-    y='Diabetes Rate (%)',
-    title='Diabetes Prevalence by Education Level',
-    labels={'Education': 'Education Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
-    range_y=[0, edu_rate['Diabetes Rate (%)'].max() * 1.2],
-    color='Diabetes Rate (%)',
-    color_continuous_scale=['#08306b', '#08519c', '#2171b5', '#4292c6', '#6baed6'],
-    template='plotly_white',
-    height=400
-)
+with col1:
+    edu_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean().reset_index()
+    edu_rate['Diabetes Rate (%)'] = edu_rate['Diabetes_binary'] * 100
 
-fig_edu_rate.update_layout(coloraxis_showscale=False)  # hide color scale bar
-st.plotly_chart(fig_edu_rate, use_container_width=True)
+    fig_edu_rate = px.bar(
+        edu_rate,
+        x='Education',
+        y='Diabetes Rate (%)',
+        title='Diabetes Prevalence by Education Level',
+        labels={'Education': 'Education Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
+        range_y=[0, edu_rate['Diabetes Rate (%)'].max() * 1.2],
+        color='Diabetes Rate (%)',
+        color_continuous_scale=['#08306b', '#08519c', '#2171b5', '#4292c6', '#6baed6'],
+        template='plotly_white',
+        height=400
+    )
+    fig_edu_rate.update_layout(coloraxis_showscale=False)
+    st.plotly_chart(fig_edu_rate, use_container_width=True)
+
+with col2:
+    income_rate = filtered_df.groupby('Income')['Diabetes_binary'].mean().reset_index()
+    income_rate['Diabetes Rate (%)'] = income_rate['Diabetes_binary'] * 100
+
+    fig_income_rate = px.bar(
+        income_rate,
+        x='Income',
+        y='Diabetes Rate (%)',
+        title='Diabetes Prevalence by Income Level',
+        labels={'Income': 'Income Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
+        range_y=[0, income_rate['Diabetes Rate (%)'].max() * 1.2],
+        color='Diabetes Rate (%)',
+        color_continuous_scale=['#08306b', '#08519c', '#2171b5', '#4292c6', '#6baed6'],
+        template='plotly_white',
+        height=400
+    )
+    fig_income_rate.update_layout(coloraxis_showscale=False)
+    st.plotly_chart(fig_income_rate, use_container_width=True)
 
 st.divider()
 
