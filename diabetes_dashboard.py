@@ -27,42 +27,30 @@ def load_diabetes_data():
     np.random.seed(42)  # For reproducible results
     n_patients = 768
     
-    # Generate outcome first (35% diabetic, 65% non-diabetic)
-    outcome = np.concatenate([
-        np.zeros(int(n_patients * 0.65)),  # Non-diabetic
-        np.ones(int(n_patients * 0.35))    # Diabetic
-    ])
-    np.random.shuffle(outcome)  # Shuffle the outcomes
-    
-    # Create realistic data based on outcome
-    glucose = []
-    for i in range(n_patients):
-        if outcome[i] == 1:  # Diabetic
-            glucose.append(max(0, np.random.normal(141, 31)))
-        else:  # Non-diabetic
-            glucose.append(max(0, np.random.normal(109, 26)))
-    
-    # Create the dataset
+    # Create realistic data
     diabetes_data = {
-        'Pregnancies': np.random.poisson(3.8, n_patients),
-        'Glucose': glucose,
-        'BloodPressure': np.maximum(0, np.random.normal(69, 19, n_patients)),
-        'SkinThickness': np.maximum(0, np.random.exponential(16, n_patients)),
-        'Insulin': np.maximum(0, np.random.exponential(100, n_patients)),
-        'BMI': np.maximum(15, np.random.normal(32, 8, n_patients)),
-        'DiabetesPedigreeFunction': np.maximum(0, np.random.gamma(2, 0.25, n_patients)),
-        'Age': np.maximum(21, np.random.gamma(2, 15, n_patients).astype(int)),
-        'Outcome': outcome.astype(int)
+        'Pregnancies': np.random.poisson(3, n_patients),
+        'Glucose': np.random.normal(120, 32, n_patients),
+        'BloodPressure': np.random.normal(69, 19, n_patients),
+        'SkinThickness': np.random.normal(20, 16, n_patients),
+        'Insulin': np.random.normal(80, 115, n_patients),
+        'BMI': np.random.normal(32, 8, n_patients),
+        'DiabetesPedigreeFunction': np.random.uniform(0.08, 2.4, n_patients),
+        'Age': np.random.randint(21, 81, n_patients),
+        'Outcome': np.random.binomial(1, 0.35, n_patients)
     }
     
     # Create DataFrame
     df = pd.DataFrame(diabetes_data)
     
     # Clean up data to realistic medical ranges
-    df['BloodPressure'] = np.clip(df['BloodPressure'], 0, 200)
+    df['Pregnancies'] = np.clip(df['Pregnancies'], 0, 17)
+    df['Glucose'] = np.clip(df['Glucose'], 0, 200)
+    df['BloodPressure'] = np.clip(df['BloodPressure'], 0, 122)
     df['SkinThickness'] = np.clip(df['SkinThickness'], 0, 100)
-    df['Insulin'] = np.clip(df['Insulin'], 0, 900)
-    df['BMI'] = np.clip(df['BMI'], 15, 70)
+    df['Insulin'] = np.clip(df['Insulin'], 0, 846)
+    df['BMI'] = np.clip(df['BMI'], 15, 67)
+    df['DiabetesPedigreeFunction'] = np.clip(df['DiabetesPedigreeFunction'], 0.08, 2.4)
     df['Age'] = np.clip(df['Age'], 21, 81)
     
     return df
