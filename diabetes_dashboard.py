@@ -149,7 +149,7 @@ feature_importance = train_random_forest(df)
 
 # -----------------------------------------------------------------------------
 # Dashboard Header
-st.title('🩺 CDC Diabetes Health Indicators Dashboard')
+st.title('CDC Diabetes Health Indicators Dashboard')
 st.markdown("""
 **Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey**  
 *Interactive dashboard analyzing health behaviors, chronic conditions, and demographics*  
@@ -320,7 +320,8 @@ with col1:
         color_continuous_scale='Blues',
         height=350
     )
-    fig_importance.update_layout(yaxis={'categoryorder': 'total ascending'})
+    fig_importance.update_layout(yaxis={'categoryorder': 'total ascending'},
+                                margin=dict(l=150))
     st.plotly_chart(fig_importance, use_container_width=True)
 
 with col2:
