@@ -565,7 +565,87 @@ with col2:
 
 st.divider()
 
-# Section 6: Data Explorer
+# Section 6: K-Means Clustering Analysis
+st.header("🧩 K-Means Clustering on Health Indicators")
+st.markdown("*Use unsupervised clustering to explore natural groupings in the diabetes health data and examine diabetes prevalence within clusters.*")
+
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+# Select numeric features for clustering
+cluster_features = ['HighBP', 'HighChol', 'BMI', 'Smoker', 'Stroke', 'HeartDiseaseorAttack',
+                    'PhysActivity', 'Fruits', 'Veggies', 'GenHlth', 'MentHlth', 'PhysHlth',
+                    'DiffWalk', 'Sex', 'Age', 'Education', 'Income']
+
+X_cluster = processed_df[cluster_features]
+
+# Scale features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X_cluster)
+
+# Elbow method
+sse = []
+k_range = range(1, 11)
+for k in k_range:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(X_scaled)
+    sse.append(kmeans.inertia_)
+
+# Plot elbow chart
+fig_elbow = px.line(
+    x=list(k_range),
+    y=sse,
+    markers=True,
+    title='Elbow Method to Determine Optimal Number of Clusters',
+    labels={'x': 'Number of Clusters (k)', 'y': 'Sum of Squared Distances (SSE)'},
+    template='plotly_white',
+    height=400
+)
+st.plotly_chart(fig_elbow, use_container_width=True)
+
+# Choose optimal k (adjust as needed based on elbow plot)
+k_optimal = 4
+kmeans_final = KMeans(n_clusters=k_optimal, random_state=42)
+processed_df['Cluster'] = kmeans_final.fit_predict(X_scaled)
+
+# Cluster size and diabetes prevalence
+cluster_summary = processed_df.groupby('Cluster').agg(
+    Count=('Cluster', 'size'),
+    Diabetes_Rate=('Diabetes_binary', 'mean')
+).reset_index()
+
+cluster_summary['Diabetes_Rate'] = cluster_summary['Diabetes_Rate'] * 100  # convert to %
+
+col1, col2 = st.columns(2)
+
+with col1:
+    fig_count = px.bar(
+        cluster_summary,
+        x='Cluster',
+        y='Count',
+        title='Number of Respondents per Cluster',
+        labels={'Count': 'Number of Respondents', 'Cluster': 'Cluster'},
+        color_discrete_sequence=['#1f77b4'],
+        height=350
+    )
+    st.plotly_chart(fig_count, use_container_width=True)
+
+with col2:
+    fig_rate = px.bar(
+        cluster_summary,
+        x='Cluster',
+        y='Diabetes_Rate',
+        title='Diabetes Rate (%) per Cluster',
+        labels={'Diabetes_Rate': 'Diabetes Rate (%)', 'Cluster': 'Cluster'},
+        color_discrete_sequence=['#1f77b4'],
+        height=350
+    )
+    st.plotly_chart(fig_rate, use_container_width=True)
+    
+st.divider()
+
+# Section 7: Data Explorer
 st.header("📋 Survey Data Explorer")
 st.markdown("*Browse and download the filtered survey data. Use the sidebar filters to customize the dataset according to your analysis needs.*")
 
