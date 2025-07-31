@@ -456,7 +456,7 @@ st.divider()
 # Section 4: Diabetes Rate by Binary Traits
 st.header("Diabetes Rate by Binary Health Indicators")
 st.markdown(
-    "*This heatmap shows the proportion of individuals with diabetes for each binary trait (1 = has the trait, 0 = does not).*"
+    "*This heatmap shows the proportion of individuals with diabetes for each binary trait.*"
 )
 
 # List of binary columns
