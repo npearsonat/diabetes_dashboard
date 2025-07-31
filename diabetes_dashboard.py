@@ -25,34 +25,25 @@ st.markdown(
 )
 
 st.markdown(
-    """
-    <style>
-    /* Existing body background pattern here ... */
+    [data-testid="stSidebar"] .stSlider > div > input[type="range"]::-webkit-slider-thumb {
+    background-color: #08306b !important;
+    border: none !important;
+}
+[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, #6baed6, #2171b5) !important;
+    height: 8px !important;
+    border-radius: 4px !important;
+}
+[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-moz-range-thumb {
+    background-color: #08306b !important;
+    border: none !important;
+}
+[data-testid="stSidebar"] .stSlider > div > input[type="range"]::-moz-range-track {
+    background: linear-gradient(to right, #6baed6, #2171b5) !important;
+    height: 8px !important;
+    border-radius: 4px !important;
+}
 
-    /* Sidebar slider customization */
-    [data-testid="stSidebar"] input[type="range"]::-webkit-slider-thumb {
-        background-color: #08306b !important;  /* Dark blue thumb */
-        border: none !important;
-    }
-    [data-testid="stSidebar"] input[type="range"]::-webkit-slider-runnable-track {
-        background: linear-gradient(to right, #6baed6, #2171b5) !important;  /* Blue track */
-        height: 8px !important;
-        border-radius: 4px !important;
-    }
-
-    /* Firefox */
-    [data-testid="stSidebar"] input[type="range"]::-moz-range-thumb {
-        background-color: #08306b !important;
-        border: none !important;
-    }
-    [data-testid="stSidebar"] input[type="range"]::-moz-range-track {
-        background: linear-gradient(to right, #6baed6, #2171b5) !important;
-        height: 8px !important;
-        border-radius: 4px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
 )
 
 # Set the title and favicon that appear in the Browser's tab bar.
