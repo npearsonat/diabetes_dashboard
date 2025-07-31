@@ -307,7 +307,6 @@ with col3:
         labels={'count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'BMI_Category': bmi_order},
-        text='Percentage',
         height=350
     )
     fig_bmi.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
@@ -439,7 +438,6 @@ with col2:
         labels={'Count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'GenHlth_Label': health_order},
-        text='Percentage',
         height=350
     )
     fig_health.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
@@ -461,7 +459,6 @@ with col3:
         title='Healthcare Access and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
-        text='Percentage',
         height=350
     )
     fig_healthcare.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
