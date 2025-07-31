@@ -453,23 +453,47 @@ with col3:
     st.plotly_chart(fig_healthcare, use_container_width=True)
 
 st.divider()
-
-# Section 4: Mental vs Physical Health Correlation
-st.header("Mental & Physical Health Relationship")
-st.markdown("*Scatter plot analysis examining the relationship between physical and mental health days, providing insights into overall wellbeing patterns among diabetic and non-diabetic individuals.*")
-
-# Mental vs Physical health days
-fig_scatter = px.scatter(
-    filtered_df.sample(min(5000, len(filtered_df))),  # Sample for performance
-    x='PhysHlth',
-    y='MentHlth',
-    color='DiabetesStatus',
-    title='Physical vs Mental Health Days (Poor Health)',
-    labels={'PhysHlth': 'Physical Health Days', 'MentHlth': 'Mental Health Days'},
-    color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
-    height=400
+# Section 4: Diabetes Rate by Binary Traits
+st.header("Diabetes Rate by Binary Health Indicators")
+st.markdown(
+    "*This heatmap shows the proportion of individuals with diabetes for each binary trait (1 = has the trait, 0 = does not).*"
 )
-st.plotly_chart(fig_scatter, use_container_width=True)
+
+# List of binary columns
+binary_columns = [
+    'HighBP', 'HighChol', 'CholCheck', 'Smoker', 'Stroke',
+    'HeartDiseaseorAttack', 'PhysActivity', 'Fruits', 'Veggies',
+    'HvyAlcoholConsump', 'AnyHealthcare', 'NoDocbcCost', 'DiffWalk'
+]
+
+# Prepare data: calculate diabetes rate per trait value (0 or 1)
+heatmap_data = []
+for col in binary_columns:
+    for value in [0, 1]:
+        group = filtered_df[filtered_df[col] == value]
+        diabetes_rate = group['Diabetes_binary'].mean()
+        heatmap_data.append({
+            'Trait': col,
+            'Value': str(value),
+            'DiabetesRate': diabetes_rate
+        })
+
+heatmap_df = pd.DataFrame(heatmap_data)
+
+# Pivot to make heatmap-friendly format
+heatmap_pivot = heatmap_df.pivot(index='Trait', columns='Value', values='DiabetesRate')
+
+# Plot heatmap
+fig_heatmap = px.imshow(
+    heatmap_pivot,
+    color_continuous_scale='Reds',
+    labels={'color': 'Diabetes Rate'},
+    title='Diabetes Rate by Binary Trait (0 vs 1)',
+    aspect='auto',
+    height=500
+)
+
+st.plotly_chart(fig_heatmap, use_container_width=True)
 
 st.divider()
 
