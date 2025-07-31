@@ -501,7 +501,7 @@ heatmap_pivot = heatmap_df.pivot(index='Trait', columns='Value', values='Diabete
 # Plot heatmap with relabeled x-axis
 fig_heatmap = px.imshow(
     heatmap_pivot,
-    color_continuous_scale='Reds',
+    color_continuous_scale='Blues',
     labels={'color': 'Diabetes Rate'},
     title='Diabetes Rate by Binary Trait (Negative vs Positive)',
     aspect='auto',
