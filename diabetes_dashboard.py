@@ -132,12 +132,12 @@ st.divider()
 # Sidebar Filters
 st.sidebar.header("Filter Survey Data")
 
-# Age range filter (using Age categories 1-13)
+# Age range filter (convert from age categories to actual years)
 age_range = st.sidebar.slider(
     "Age Range", 
-    int(processed_df['Age'].min()), 
-    int(processed_df['Age'].max()), 
-    (int(processed_df['Age'].min()), int(processed_df['Age'].max()))
+    18, 
+    80, 
+    (18, 80)
 )
 
 # BMI range filter
@@ -155,9 +155,28 @@ health_status = st.sidebar.multiselect(
     default=['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
 )
 
+# Convert age range to age categories for filtering
+def age_to_category(age):
+    if age <= 24: return 1
+    elif age <= 29: return 2
+    elif age <= 34: return 3
+    elif age <= 39: return 4
+    elif age <= 44: return 5
+    elif age <= 49: return 6
+    elif age <= 54: return 7
+    elif age <= 59: return 8
+    elif age <= 64: return 9
+    elif age <= 69: return 10
+    elif age <= 74: return 11
+    elif age <= 79: return 12
+    else: return 13
+
+min_age_cat = age_to_category(age_range[0])
+max_age_cat = age_to_category(age_range[1])
+
 # Apply filters
 filtered_df = processed_df[
-    (processed_df['Age'] >= age_range[0]) & (processed_df['Age'] <= age_range[1]) &
+    (processed_df['Age'] >= min_age_cat) & (processed_df['Age'] <= max_age_cat) &
     (processed_df['BMI'] >= bmi_range[0]) & (processed_df['BMI'] <= bmi_range[1]) &
     (processed_df['GenHlth_Label'].isin(health_status))
 ]
