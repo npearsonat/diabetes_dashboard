@@ -12,7 +12,6 @@ from sklearn.model_selection import train_test_split
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
     page_title='Diabetes Health Indicators Dashboard',
-    page_icon='🩺',
     layout='wide'
 )
 
@@ -308,7 +307,6 @@ st.markdown("*Random Forest model analysis showing the most important features f
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
-    # Random Forest Feature Importance
     fig_importance = px.bar(
         feature_importance,
         x='Importance',
@@ -318,10 +316,13 @@ with col1:
         labels={'Importance': 'Feature Importance', 'Feature_Name': 'Health Indicators'},
         color='Importance',
         color_continuous_scale='Blues',
-        height=350
+        height=len(feature_importance) * 40  # scale height based on number of features
     )
-    fig_importance.update_layout(yaxis={'categoryorder': 'total ascending'},
-                                margin=dict(l=150))
+    fig_importance.update_layout(
+        yaxis={'categoryorder': 'total ascending'},
+        margin=dict(l=150)  # increase left margin if labels are long
+    )
+    fig_importance.update_yaxes(automargin=True)
     st.plotly_chart(fig_importance, use_container_width=True)
 
 with col2:
