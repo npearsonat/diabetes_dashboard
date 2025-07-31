@@ -519,44 +519,48 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 
 st.divider()
 
-# Section 5: Diabetes Rate by Income and Education
-st.header("📈 Diabetes Rate and Distribution by Education Level")
-st.markdown("Explore the diabetes rate (%) alongside the distribution of respondents across different education levels.")
+# Section 5 Education and Income
+st.header("Education Level & Diabetes Analysis")
+st.markdown("*Explore diabetes rates and respondent distribution by education level.*")
 
-# Diabetes rate by Education
-diabetes_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean() * 100
-diabetes_rate = diabetes_rate.reset_index().rename(columns={'Diabetes_binary': 'Diabetes Rate (%)'})
-
-fig_rate = px.bar(
-    diabetes_rate,
-    x='Education',
-    y='Diabetes Rate (%)',
-    title='Diabetes Rate by Education Level',
-    labels={'Education': 'Education Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
-    range_y=[0, diabetes_rate['Diabetes Rate (%)'].max() * 1.2],
-    template='plotly_white'
-)
-
-# Distribution by Education
-distribution = filtered_df['Education'].value_counts().sort_index()
-distribution = distribution.reset_index().rename(columns={'index': 'Education', 0: 'Count'})
-
-fig_dist = px.bar(
-    distribution,
-    x='Education',
-    y='Count',
-    title='Respondent Distribution by Education Level',
-    labels={'Education': 'Education Level', 'Count': 'Number of Respondents'},
-    template='plotly_white'
-)
-
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
-    st.plotly_chart(fig_rate, use_container_width=True)
+    # Diabetes rate by Education level
+    edu_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean().reset_index()
+    edu_rate['Diabetes Rate (%)'] = edu_rate['Diabetes_binary'] * 100
+
+    fig_edu_rate = px.bar(
+        edu_rate,
+        x='Education',
+        y='Diabetes Rate (%)',
+        title='Diabetes Rate by Education Level',
+        labels={'Education': 'Education Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
+        range_y=[0, edu_rate['Diabetes Rate (%)'].max() * 1.2],
+        template='plotly_white',
+        height=350
+    )
+    st.plotly_chart(fig_edu_rate, use_container_width=True)
 
 with col2:
-    st.plotly_chart(fig_dist, use_container_width=True)
+    # Respondent distribution by Education level
+    edu_dist = filtered_df['Education'].value_counts().sort_index().reset_index()
+    edu_dist.columns = ['Education', 'Count']
+
+    fig_edu_dist = px.bar(
+        edu_dist,
+        x='Education',
+        y='Count',
+        title='Respondent Distribution by Education Level',
+        labels={'Education': 'Education Level', 'Count': 'Number of Respondents'},
+        template='plotly_white',
+        height=350
+    )
+    st.plotly_chart(fig_edu_dist, use_container_width=True)
+
+with col3:
+    # Placeholder or future content
+    st.write("")
 
 st.divider()
 
