@@ -519,7 +519,48 @@ st.plotly_chart(fig_heatmap, use_container_width=True)
 
 st.divider()
 
-# Section 5: Data Explorer
+# Section 5: Diabetes Rate by Income and Education
+st.header("📈 Diabetes Rate and Distribution by Education Level")
+st.markdown("Explore the diabetes rate (%) alongside the distribution of respondents across different education levels.")
+
+# Diabetes rate by Education
+diabetes_rate = filtered_df.groupby('Education')['Diabetes_binary'].mean() * 100
+diabetes_rate = diabetes_rate.reset_index().rename(columns={'Diabetes_binary': 'Diabetes Rate (%)'})
+
+fig_rate = px.bar(
+    diabetes_rate,
+    x='Education',
+    y='Diabetes Rate (%)',
+    title='Diabetes Rate by Education Level',
+    labels={'Education': 'Education Level', 'Diabetes Rate (%)': 'Diabetes Rate (%)'},
+    range_y=[0, diabetes_rate['Diabetes Rate (%)'].max() * 1.2],
+    template='plotly_white'
+)
+
+# Distribution by Education
+distribution = filtered_df['Education'].value_counts().sort_index()
+distribution = distribution.reset_index().rename(columns={'index': 'Education', 'Education': 'Count'})
+
+fig_dist = px.bar(
+    distribution,
+    x='Education',
+    y='Count',
+    title='Respondent Distribution by Education Level',
+    labels={'Education': 'Education Level', 'Count': 'Number of Respondents'},
+    template='plotly_white'
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig_rate, use_container_width=True)
+
+with col2:
+    st.plotly_chart(fig_dist, use_container_width=True)
+
+st.divider()
+
+# Section 6: Data Explorer
 st.header("📋 Survey Data Explorer")
 st.markdown("*Browse and download the filtered survey data. Use the sidebar filters to customize the dataset according to your analysis needs.*")
 
