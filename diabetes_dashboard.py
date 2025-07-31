@@ -246,6 +246,9 @@ with col1:
     bmi_diabetes = filtered_df.groupby(['BMI_Category', 'DiabetesStatus']).size().reset_index(name='Count')
     bmi_diabetes['BMI_Category'] = pd.Categorical(bmi_diabetes['BMI_Category'], categories=bmi_order, ordered=True)
     bmi_diabetes = bmi_diabetes.sort_values('BMI_Category')
+    # Calculate percentages for BMI
+    bmi_totals = bmi_diabetes.groupby('BMI_Category')['Count'].sum()
+    bmi_diabetes['Percentage'] = bmi_diabetes.apply(lambda row: (row['Count'] / bmi_totals[row['BMI_Category']]) * 100, axis=1)
     
     fig_bmi = px.bar(
         bmi_diabetes,
@@ -255,8 +258,10 @@ with col1:
         title='BMI Categories and Diabetes Status',
         labels={'count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        category_orders={'BMI_Category': bmi_order}
+        category_orders={'BMI_Category': bmi_order},
+        text='Percentage'
     )
+    fig_bmi.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_bmi.update_layout(height=400)
     st.plotly_chart(fig_bmi, use_container_width=True)
 
@@ -266,6 +271,10 @@ with col2:
     selected_risk = st.selectbox("Select Risk Factor:", risk_factors)
     
     risk_diabetes = filtered_df.groupby([selected_risk, 'DiabetesStatus']).size().reset_index(name='Count')
+    # Calculate percentages for risk factors
+    risk_totals = risk_diabetes.groupby(selected_risk)['Count'].sum()
+    risk_diabetes['Percentage'] = risk_diabetes.apply(lambda row: (row['Count'] / risk_totals[row[selected_risk]]) * 100, axis=1)
+    
     fig_risk = px.bar(
         risk_diabetes,
         x=selected_risk,
@@ -273,8 +282,10 @@ with col2:
         color='DiabetesStatus',
         title=f'{selected_risk.replace("_Label", "")} and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        text='Percentage'
     )
+    fig_risk.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_risk.update_layout(height=400)
     st.plotly_chart(fig_risk, use_container_width=True)
 
@@ -294,6 +305,10 @@ col1, col2 = st.columns(2)
 with col1:
     # Physical activity and diabetes
     activity_diabetes = filtered_df.groupby(['PhysActivity_Label', 'DiabetesStatus']).size().reset_index(name='Count')
+    # Calculate percentages for physical activity
+    activity_totals = activity_diabetes.groupby('PhysActivity_Label')['Count'].sum()
+    activity_diabetes['Percentage'] = activity_diabetes.apply(lambda row: (row['Count'] / activity_totals[row['PhysActivity_Label']]) * 100, axis=1)
+    
     fig_activity = px.bar(
         activity_diabetes,
         x='PhysActivity_Label',
@@ -301,8 +316,10 @@ with col1:
         color='DiabetesStatus',
         title='Physical Activity and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        text='Percentage'
     )
+    fig_activity.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_activity.update_layout(height=400)
     st.plotly_chart(fig_activity, use_container_width=True)
 
@@ -312,6 +329,9 @@ with col2:
     health_diabetes = filtered_df.groupby(['GenHlth_Label', 'DiabetesStatus']).size().reset_index(name='Count')
     health_diabetes['GenHlth_Label'] = pd.Categorical(health_diabetes['GenHlth_Label'], categories=health_order, ordered=True)
     health_diabetes = health_diabetes.sort_values('GenHlth_Label')
+    # Calculate percentages for general health
+    health_totals = health_diabetes.groupby('GenHlth_Label')['Count'].sum()
+    health_diabetes['Percentage'] = health_diabetes.apply(lambda row: (row['Count'] / health_totals[row['GenHlth_Label']]) * 100, axis=1)
     
     fig_health = px.bar(
         health_diabetes,
@@ -321,8 +341,10 @@ with col2:
         title='Self-Reported General Health and Diabetes',
         labels={'Count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
-        category_orders={'GenHlth_Label': health_order}
+        category_orders={'GenHlth_Label': health_order},
+        text='Percentage'
     )
+    fig_health.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_health.update_layout(height=400)
     st.plotly_chart(fig_health, use_container_width=True)
 
@@ -409,6 +431,9 @@ with col1:
     # Healthcare access by diabetes status
     healthcare_df = filtered_df.groupby(['AnyHealthcare', 'DiabetesStatus']).size().reset_index(name='Count')
     healthcare_df['AnyHealthcare'] = healthcare_df['AnyHealthcare'].map({0: 'No Healthcare', 1: 'Has Healthcare'})
+    # Calculate percentages for healthcare access
+    healthcare_totals = healthcare_df.groupby('AnyHealthcare')['Count'].sum()
+    healthcare_df['Percentage'] = healthcare_df.apply(lambda row: (row['Count'] / healthcare_totals[row['AnyHealthcare']]) * 100, axis=1)
     
     fig_healthcare = px.bar(
         healthcare_df,
@@ -417,8 +442,10 @@ with col1:
         color='DiabetesStatus',
         title='Healthcare Access and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        text='Percentage'
     )
+    fig_healthcare.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_healthcare.update_layout(height=400)
     st.plotly_chart(fig_healthcare, use_container_width=True)
 
