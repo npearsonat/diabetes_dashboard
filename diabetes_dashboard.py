@@ -308,7 +308,6 @@ with col3:
         category_orders={'BMI_Category': bmi_order},
         height=350
     )
-    fig_bmi.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     st.plotly_chart(fig_bmi, use_container_width=True)
 
 st.divider()
@@ -434,12 +433,10 @@ with col2:
         y='Count',
         color='DiabetesStatus',
         title='Self-Reported General Health and Diabetes',
-        labels={'Count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         category_orders={'GenHlth_Label': health_order},
         height=350
     )
-    fig_health.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     st.plotly_chart(fig_health, use_container_width=True)
 
 with col3:
@@ -456,11 +453,9 @@ with col3:
         y='Count',
         color='DiabetesStatus',
         title='Healthcare Access and Diabetes Status',
-        labels={'Count': 'Number of Respondents'},
         color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},
         height=350
     )
-    fig_healthcare.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     st.plotly_chart(fig_healthcare, use_container_width=True)
 
 st.divider()
