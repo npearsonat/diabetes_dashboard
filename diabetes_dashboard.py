@@ -130,14 +130,14 @@ st.divider()
 
 # -----------------------------------------------------------------------------
 # Sidebar Filters
-st.sidebar.header("🔍 Filter Survey Data")
+st.sidebar.header("Filter Survey Data")
 
-# Age group filter
-age_groups = sorted(processed_df['AgeGroup'].unique())
-selected_ages = st.sidebar.multiselect(
-    "Age Groups", 
-    age_groups, 
-    default=age_groups
+# Age range filter (using Age categories 1-13)
+age_range = st.sidebar.slider(
+    "Age Range", 
+    int(processed_df['Age'].min()), 
+    int(processed_df['Age'].max()), 
+    (int(processed_df['Age'].min()), int(processed_df['Age'].max()))
 )
 
 # BMI range filter
@@ -157,7 +157,7 @@ health_status = st.sidebar.multiselect(
 
 # Apply filters
 filtered_df = processed_df[
-    (processed_df['AgeGroup'].isin(selected_ages)) &
+    (processed_df['Age'] >= age_range[0]) & (processed_df['Age'] <= age_range[1]) &
     (processed_df['BMI'] >= bmi_range[0]) & (processed_df['BMI'] <= bmi_range[1]) &
     (processed_df['GenHlth_Label'].isin(health_status))
 ]
@@ -168,7 +168,11 @@ st.sidebar.metric("Filtered Responses", len(filtered_df))
 # Main Dashboard Content
 
 # Row 1: Demographics Analysis
-st.header("👥 Demographics & Diabetes Prevalence")
+st.markdown("""
+<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Demographics & Diabetes Prevalence")
 
 col1, col2 = st.columns(2)
 
@@ -202,8 +206,16 @@ with col2:
     fig_sex.update_layout(height=400)
     st.plotly_chart(fig_sex, use_container_width=True)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.divider()
+
 # Row 2: Risk Factors Analysis
-st.header("⚠️ Major Risk Factors")
+st.markdown("""
+<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Major Risk Factors")
 
 col1, col2 = st.columns(2)
 
@@ -238,8 +250,16 @@ with col2:
     fig_risk.update_layout(height=400)
     st.plotly_chart(fig_risk, use_container_width=True)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.divider()
+
 # Row 3: Health Behaviors
-st.header("🏃‍♂️ Health Behaviors & Lifestyle")
+st.markdown("""
+<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Health Behaviors & Lifestyle")
 
 col1, col2 = st.columns(2)
 
@@ -273,8 +293,16 @@ with col2:
     fig_health.update_layout(height=400)
     st.plotly_chart(fig_health, use_container_width=True)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.divider()
+
 # Row 4: Advanced Analytics
-st.header("📊 Risk Factor Correlation Analysis")
+st.markdown("""
+<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Risk Factor Correlation Analysis")
 
 col1, col2 = st.columns(2)
 
@@ -330,8 +358,16 @@ with col2:
     fig_risk_score.update_layout(height=400)
     st.plotly_chart(fig_risk_score, use_container_width=True)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.divider()
+
 # Row 5: Healthcare Access
-st.header("🏥 Healthcare Access & Outcomes")
+st.markdown("""
+<div style="background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Healthcare Access & Outcomes")
 
 col1, col2 = st.columns(2)
 
@@ -366,8 +402,16 @@ with col2:
     fig_scatter.update_layout(height=400)
     st.plotly_chart(fig_scatter, use_container_width=True)
 
+st.markdown("</div>", unsafe_allow_html=True)
+
+st.divider()
+
 # Row 6: Data Explorer
-st.header("📋 Survey Data Explorer")
+st.markdown("""
+<div style="background-color: #ffffff; padding: 20px; border-radius: 10px; margin: 10px 0;">
+""", unsafe_allow_html=True)
+
+st.header("Survey Data Explorer")
 
 # Display key columns
 display_columns = ['AgeGroup', 'Sex_Label', 'BMI', 'BMI_Category', 'GenHlth_Label', 
@@ -387,6 +431,8 @@ st.download_button(
     file_name='diabetes_health_indicators_filtered.csv',
     mime='text/csv'
 )
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # Footer
