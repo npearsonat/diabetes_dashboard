@@ -163,32 +163,27 @@ feature_importance = train_random_forest(df)
 
 # -----------------------------------------------------------------------------
 # Dashboard Header
-st.title('CDC Diabetes Health Indicators Dashboard')
-st.markdown("""
-**Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey**  
-*Interactive dashboard analyzing health behaviors, chronic conditions, and demographics*  
-**Dataset:** CDC Behavioral Risk Factor Surveillance System (35,000 survey responses)
-""")
+col_title, col_stats = st.columns([3, 1])
 
-# Key Statistics
-col1, col2, col3, col4 = st.columns(4)
+with col_title:
+    st.title('CDC Diabetes Health Indicators Dashboard')
+    st.markdown("""
+    **Comprehensive analysis of diabetes risk factors from CDC's BRFSS 2015 Survey**  
+    *Interactive dashboard analyzing health behaviors, chronic conditions, and demographics*  
+    **Dataset:** CDC Behavioral Risk Factor Surveillance System (35,000 survey responses)
+    """)
 
-with col1:
+with col_stats:
     total_patients = len(processed_df)
-    st.metric("Total Survey Responses", f"{total_patients:,}")
-
-with col2:
     diabetes_rate = (processed_df['Diabetes_binary'].sum() / len(processed_df)) * 100
-    st.metric("Diabetes Rate", f"{diabetes_rate:.1f}%")
-
-with col3:
     high_bp_rate = (processed_df['HighBP'].sum() / len(processed_df)) * 100
-    st.metric("High Blood Pressure", f"{high_bp_rate:.1f}%")
-
-with col4:
     avg_bmi = processed_df['BMI'].mean()
+    
+    st.metric("Total Survey Responses", f"{total_patients:,}")
+    st.metric("Diabetes Rate", f"{diabetes_rate:.1f}%")
+    st.metric("High Blood Pressure", f"{high_bp_rate:.1f}%")
     st.metric("Average BMI", f"{avg_bmi:.1f}")
-
+    
 st.divider()
 
 # -----------------------------------------------------------------------------
