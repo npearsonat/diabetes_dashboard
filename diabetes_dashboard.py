@@ -497,7 +497,7 @@ fig_heatmap = px.imshow(
 fig_heatmap.update_xaxes(
     tickmode='array',
     tickvals=[0, 1],
-    ticktext=['Does Not Have', 'Has']
+    ticktext=['Doesn't Exibit Trait', 'Exhibits Trait']
 )
 
 st.plotly_chart(fig_heatmap, use_container_width=True)
