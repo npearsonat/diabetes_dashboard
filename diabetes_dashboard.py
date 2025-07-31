@@ -77,7 +77,7 @@ def preprocess_data(df):
     processed_df['Smoker_Label'] = processed_df['Smoker'].map({0: 'Non-Smoker', 1: 'Smoker'})
     processed_df['PhysActivity_Label'] = processed_df['PhysActivity'].map({0: 'Inactive', 1: 'Active'})
     
-    # BMI categories
+    # BMI categories with proper ordering
     processed_df['BMI_Category'] = pd.cut(processed_df['BMI'], 
                                         bins=[0, 18.5, 25, 30, 100], 
                                         labels=['Underweight', 'Normal', 'Overweight', 'Obese'])
@@ -88,8 +88,8 @@ def preprocess_data(df):
                   11: '70-74', 12: '75-79', 13: '80+'}
     processed_df['AgeGroup'] = processed_df['Age'].map(age_mapping)
     
-    # General health labels
-    health_mapping = {1: 'Excellent', 2: 'Very Good', 3: 'Good', 4: 'Fair', 5: 'Poor'}
+    # General health labels with proper ordering
+    health_mapping = {5: 'Poor', 4: 'Fair', 3: 'Good', 2: 'Very Good', 1: 'Excellent'}
     processed_df['GenHlth_Label'] = processed_df['GenHlth'].map(health_mapping)
     
     return processed_df
@@ -163,11 +163,11 @@ bmi_range = st.sidebar.slider(
     (float(processed_df['BMI'].min()), float(processed_df['BMI'].max()))
 )
 
-# Health status filter
+# Health status filter (updated order)
 health_status = st.sidebar.multiselect(
     "General Health Status",
-    ['Excellent', 'Very Good', 'Good', 'Fair', 'Poor'],
-    default=['Excellent', 'Very Good', 'Good', 'Fair', 'Poor']
+    ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'],
+    default=['Poor', 'Fair', 'Good', 'Very Good', 'Excellent']
 )
 
 # Apply filters
@@ -201,14 +201,18 @@ with col1:
         color='DiabetesStatus',
         title='Diabetes Prevalence by Age Group',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
     )
     fig_age.update_layout(height=400, xaxis_tickangle=45)
     st.plotly_chart(fig_age, use_container_width=True)
 
 with col2:
-    # Sex and diabetes distribution
+    # Sex and diabetes distribution with percentages
     sex_diabetes = filtered_df.groupby(['Sex_Label', 'DiabetesStatus']).size().reset_index(name='Count')
+    # Calculate percentages
+    sex_totals = sex_diabetes.groupby('Sex_Label')['Count'].sum()
+    sex_diabetes['Percentage'] = sex_diabetes.apply(lambda row: (row['Count'] / sex_totals[row['Sex_Label']]) * 100, axis=1)
+    
     fig_sex = px.bar(
         sex_diabetes,
         x='Sex_Label',
@@ -216,8 +220,10 @@ with col2:
         color='DiabetesStatus',
         title='Diabetes Prevalence by Sex',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        text='Percentage'
     )
+    fig_sex.update_traces(texttemplate='%{text:.1f}%', textposition='inside')
     fig_sex.update_layout(height=400)
     st.plotly_chart(fig_sex, use_container_width=True)
 
@@ -235,14 +241,21 @@ st.header("Major Risk Factors")
 col1, col2 = st.columns(2)
 
 with col1:
-    # BMI distribution by diabetes status
-    fig_bmi = px.histogram(
-        filtered_df,
+    # BMI distribution by diabetes status with proper ordering
+    bmi_order = ['Underweight', 'Normal', 'Overweight', 'Obese']
+    bmi_diabetes = filtered_df.groupby(['BMI_Category', 'DiabetesStatus']).size().reset_index(name='Count')
+    bmi_diabetes['BMI_Category'] = pd.Categorical(bmi_diabetes['BMI_Category'], categories=bmi_order, ordered=True)
+    bmi_diabetes = bmi_diabetes.sort_values('BMI_Category')
+    
+    fig_bmi = px.bar(
+        bmi_diabetes,
         x='BMI_Category',
+        y='Count',
         color='DiabetesStatus',
         title='BMI Categories and Diabetes Status',
         labels={'count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        category_orders={'BMI_Category': bmi_order}
     )
     fig_bmi.update_layout(height=400)
     st.plotly_chart(fig_bmi, use_container_width=True)
@@ -260,7 +273,7 @@ with col2:
         color='DiabetesStatus',
         title=f'{selected_risk.replace("_Label", "")} and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
     )
     fig_risk.update_layout(height=400)
     st.plotly_chart(fig_risk, use_container_width=True)
@@ -288,14 +301,18 @@ with col1:
         color='DiabetesStatus',
         title='Physical Activity and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
     )
     fig_activity.update_layout(height=400)
     st.plotly_chart(fig_activity, use_container_width=True)
 
 with col2:
-    # General health status
+    # General health status with proper ordering (Poor to Excellent)
+    health_order = ['Poor', 'Fair', 'Good', 'Very Good', 'Excellent']
     health_diabetes = filtered_df.groupby(['GenHlth_Label', 'DiabetesStatus']).size().reset_index(name='Count')
+    health_diabetes['GenHlth_Label'] = pd.Categorical(health_diabetes['GenHlth_Label'], categories=health_order, ordered=True)
+    health_diabetes = health_diabetes.sort_values('GenHlth_Label')
+    
     fig_health = px.bar(
         health_diabetes,
         x='GenHlth_Label',
@@ -303,7 +320,8 @@ with col2:
         color='DiabetesStatus',
         title='Self-Reported General Health and Diabetes',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'},  # Blue and Orange
+        category_orders={'GenHlth_Label': health_order}
     )
     fig_health.update_layout(height=400)
     st.plotly_chart(fig_health, use_container_width=True)
@@ -368,7 +386,8 @@ with col2:
         x=risk_counts.index,
         y=risk_counts.values,
         title='Distribution of Diabetes Risk Scores',
-        labels={'x': 'Risk Score (0-12)', 'y': 'Number of Respondents'}
+        labels={'x': 'Risk Score (0-12)', 'y': 'Number of Respondents'},
+        color_discrete_sequence=['#1f77b4']  # Blue color
     )
     fig_risk_score.update_layout(height=400)
     st.plotly_chart(fig_risk_score, use_container_width=True)
@@ -398,7 +417,7 @@ with col1:
         color='DiabetesStatus',
         title='Healthcare Access and Diabetes Status',
         labels={'Count': 'Number of Respondents'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
     )
     fig_healthcare.update_layout(height=400)
     st.plotly_chart(fig_healthcare, use_container_width=True)
@@ -412,7 +431,7 @@ with col2:
         color='DiabetesStatus',
         title='Physical vs Mental Health Days (Poor Health)',
         labels={'PhysHlth': 'Physical Health Days', 'MentHlth': 'Mental Health Days'},
-        color_discrete_map={'No Diabetes': '#2E8B57', 'Diabetes': '#DC143C'}
+        color_discrete_map={'No Diabetes': '#1f77b4', 'Diabetes': '#ff7f0e'}  # Blue and Orange
     )
     fig_scatter.update_layout(height=400)
     st.plotly_chart(fig_scatter, use_container_width=True)
