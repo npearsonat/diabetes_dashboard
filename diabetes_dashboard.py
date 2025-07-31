@@ -9,6 +9,24 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
+#Background pattern
+st.markdown(
+    """
+    <style>
+    body {
+        background: repeating-linear-gradient(
+            45deg,
+            #f9f9f9,
+            #f9f9f9 10px,
+            #f0f0f0 10px,
+            #f0f0f0 20px
+        );
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Set the title and favicon that appear in the Browser's tab bar.
 st.set_page_config(
     page_title='Diabetes Health Indicators Dashboard',
