@@ -232,7 +232,7 @@ st.sidebar.metric("Filtered Responses", len(filtered_df))
 # Main Dashboard Content
 
 # Section 1: Demographics Analysis
-st.header("📊 Demographics & Diabetes Prevalence")
+st.header("Demographics & Diabetes Prevalence")
 st.markdown("*Explore how diabetes rates vary across different demographic groups including age and sex distributions.*")
 
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -302,7 +302,7 @@ with col3:
 st.divider()
 
 # Section 2: Risk Factors and ML Insights
-st.header("🤖 Machine Learning Insights & Risk Factors")
+st.header("Machine Learning Insights & Risk Factors")
 st.markdown("*Random Forest model analysis showing the most important features for predicting diabetes, alongside key risk factor comparisons.*")
 
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -378,7 +378,7 @@ with col3:
 st.divider()
 
 # Section 3: Health Behaviors & Healthcare Access
-st.header("💪 Health Behaviors & Healthcare Access")
+st.header("Health Behaviors & Healthcare Access")
 st.markdown("*Analysis of lifestyle factors including physical activity, self-reported health status, and healthcare accessibility patterns.*")
 
 col1, col2, col3 = st.columns([1, 1, 1])
@@ -454,7 +454,7 @@ with col3:
 st.divider()
 
 # Section 4: Mental vs Physical Health Correlation
-st.header("🧠 Mental & Physical Health Relationship")
+st.header("Mental & Physical Health Relationship")
 st.markdown("*Scatter plot analysis examining the relationship between physical and mental health days, providing insights into overall wellbeing patterns among diabetic and non-diabetic individuals.*")
 
 # Mental vs Physical health days
